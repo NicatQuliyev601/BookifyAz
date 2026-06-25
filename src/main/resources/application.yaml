@@ -8,11 +8,8 @@ spring:
     password: password
     driver-class-name: org.postgresql.Driver
 
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-    baseline-on-migrate: true
-    validate-on-migrate: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
 
   jpa:
     hibernate:

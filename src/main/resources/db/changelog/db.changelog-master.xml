@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="bookifyaz">
+        <sqlFile path="db/changelog/V1__create_tenants.sql"/>
+    </changeSet>
+
+    <changeSet id="2" author="bookifyaz">
+        <sqlFile path="db/changelog/V2__create_users.sql"/>
+    </changeSet>
+
+    <changeSet id="3" author="bookifyaz">
+        <sqlFile path="db/changelog/V3__create_tenant_user.sql"/>
+    </changeSet>
+
+    <changeSet id="4" author="bookifyaz">
+        <sqlFile path="db/changelog/V4__create_staff_and_services.sql"/>
+    </changeSet>
+
+    <changeSet id="5" author="bookifyaz">
+        <sqlFile path="db/changelog/V5__create_working_hours_and_time_off.sql"/>
+    </changeSet>
+
+    <changeSet id="6" author="bookifyaz">
+        <sqlFile path="db/changelog/V6__create_bookings.sql"/>
+    </changeSet>
+
+    <changeSet id="7" author="bookifyaz">
+        <sqlFile path="db/changelog/V7__create_subscriptions_and_payments.sql"/>
+    </changeSet>
+
+    <changeSet id="8" author="bookifyaz">
+        <sqlFile path="db/changelog/V8__create_notifications_and_reviews.sql"/>
+    </changeSet>
+
+</databaseChangeLog>
