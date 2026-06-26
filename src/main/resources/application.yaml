@@ -19,10 +19,11 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+  security:
+    secret: bXMxNG1zMTRtczE0bXMxNG1zMTRtczE0bXMxNG1zMTRtczE0bXMxNG1zMTRtczE0bXMxNG1zMTRtczE0bXMxNA==
+    token:
+      expirationTime: 60
 
 server:
   port: 8086
 
-#jwt:
-#  secret: bookifyaz-super-secret-key-change-this-in-production
-#  expiration-ms: 86400000

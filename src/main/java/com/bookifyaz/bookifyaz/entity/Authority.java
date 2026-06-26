@@ -9,7 +9,7 @@ public class Authority implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    int id;
 
     @Enumerated(EnumType.STRING)
     UserAuthority authority;
@@ -21,8 +21,12 @@ public class Authority implements GrantedAuthority {
     public Authority() {
     }
 
-    public Authority(Long id, UserAuthority authority) {
+    public Authority(int id, UserAuthority authority) {
         this.id = id;
+        this.authority = authority;
+    }
+
+    public void setAuthority(UserAuthority authority) {
         this.authority = authority;
     }
 }

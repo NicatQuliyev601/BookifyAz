@@ -33,6 +33,18 @@ public class User {
     @CreationTimestamp
     private Timestamp createdAt;
 
+    public User(String fullName, String email, String phone, String password, List<Authority> authorities) {
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+        this.authorities = authorities;
+    }
+
+    public User() {
+
+    }
+
     public int getId() {
         return id;
     }
