@@ -1,4 +1,4 @@
 package com.bookifyaz.bookifyaz.dto.request;
 
-public record RegisterRequest(String fullName,String email,String phone,String password) {
+public record RegisterRequest(String fullName,String email,String phone,String password,String businessName,String subDomain, String timezone) {
 }

@@ -1,6 +1,7 @@
 package com.bookifyaz.bookifyaz.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 @Entity
@@ -14,6 +15,7 @@ public class Tenant {
     private String logoUrl;
     private String timezone;
     private boolean isActive;
+    @CreationTimestamp
     private Timestamp createdAt;
 
     public int getId() {
