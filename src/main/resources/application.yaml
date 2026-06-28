@@ -30,4 +30,5 @@ server:
 logging:
   level:
     com.bookifyaz.bookifyaz.tenant: INFO
+    com.bookifyaz.bookifyaz.service: INFO
 

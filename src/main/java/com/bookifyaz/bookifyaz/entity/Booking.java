@@ -1,11 +1,13 @@
 package com.bookifyaz.bookifyaz.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @FilterDef(name = "tenantFilter", parameters = @ParamDef(name = "tenantId", type = Integer.class))
 @Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
@@ -16,11 +18,12 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private Timestamp startAt;
-    private Timestamp endAt;
+    private LocalDateTime startAt;
+    private LocalDateTime endAt;
     private String status;
     private String notes;
-    private Timestamp createdAt;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "tenant_id")
@@ -43,19 +46,19 @@ public class Booking {
         this.id = id;
     }
 
-    public Timestamp getStartAt() {
+    public LocalDateTime getStartAt() {
         return startAt;
     }
 
-    public void setStartAt(Timestamp startAt) {
+    public void setStartAt(LocalDateTime startAt) {
         this.startAt = startAt;
     }
 
-    public Timestamp getEndAt() {
+    public LocalDateTime getEndAt() {
         return endAt;
     }
 
-    public void setEndAt(Timestamp endAt) {
+    public void setEndAt(LocalDateTime endAt) {
         this.endAt = endAt;
     }
 
@@ -75,11 +78,11 @@ public class Booking {
         this.notes = notes;
     }
 
-    public Timestamp getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 

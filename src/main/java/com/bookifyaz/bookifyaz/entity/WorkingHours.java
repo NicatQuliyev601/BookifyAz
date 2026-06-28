@@ -2,8 +2,7 @@ package com.bookifyaz.bookifyaz.entity;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalTime;
 @Entity
 @Table(name = "working_hours")
 public class WorkingHours {
@@ -11,8 +10,8 @@ public class WorkingHours {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private  int dayOfWeek;
-    private LocalDate startTime;
-    private LocalDate endTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private boolean isOff;
 
     @ManyToOne
@@ -35,19 +34,19 @@ public class WorkingHours {
         this.dayOfWeek = dayOfWeek;
     }
 
-    public LocalDate getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDate startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public LocalDate getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalDate endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
 
