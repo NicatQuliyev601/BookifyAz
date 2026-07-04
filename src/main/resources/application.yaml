@@ -23,6 +23,10 @@ spring:
     secret: bXMxNG1zMTRtczE0bXMxNG1zMTRtczE0bXMxNG1zMTRtczE0bXMxNG1zMTRtczE0bXMxNG1zMTRtczE0bXMxNA==
     token:
       expirationTime: 60
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 server:
   port: 8086
@@ -31,4 +35,3 @@ logging:
   level:
     com.bookifyaz.bookifyaz.tenant: INFO
     com.bookifyaz.bookifyaz.service: INFO
-

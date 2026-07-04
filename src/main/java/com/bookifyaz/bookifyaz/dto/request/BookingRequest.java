@@ -15,5 +15,6 @@ public record BookingRequest(
         String clientName,
         String email,
         int staffId,
-        int serviceId) {
+        int serviceId,
+        String lockToken) {
 }

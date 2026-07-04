@@ -3,6 +3,7 @@ package com.bookifyaz.bookifyaz.service;
 import com.bookifyaz.bookifyaz.dto.request.BookingRequest;
 import com.bookifyaz.bookifyaz.dto.response.BookingResponse;
 import com.bookifyaz.bookifyaz.entity.*;
+import com.bookifyaz.bookifyaz.redis.SlotLockService;
 import com.bookifyaz.bookifyaz.repository.*;
 import com.bookifyaz.bookifyaz.tenant.TenantContext;
 import org.slf4j.Logger;
@@ -31,8 +32,9 @@ public class BookingService {
     private final StaffRepository staffRepository;
     private final AuthorityRepository authorityRepository;
     private final TenantSubscriptionRepository tenantSubscriptionRepository;
+    private final SlotLockService slotLockService;
 
-    public BookingService(WorkingHoursRepository workingHoursRepository, TimeOffRepository timeOffRepository, ServiceRepository serviceRepository, BookingRepository bookingRepository, UserRepository userRepository, TenantRepository tenantRepository, StaffRepository staffRepository, AuthorityRepository authorityRepository, TenantSubscriptionRepository tenantSubscriptionRepository) {
+    public BookingService(WorkingHoursRepository workingHoursRepository, TimeOffRepository timeOffRepository, ServiceRepository serviceRepository, BookingRepository bookingRepository, UserRepository userRepository, TenantRepository tenantRepository, StaffRepository staffRepository, AuthorityRepository authorityRepository, TenantSubscriptionRepository tenantSubscriptionRepository, SlotLockService slotLockService) {
         this.workingHoursRepository = workingHoursRepository;
         this.timeOffRepository = timeOffRepository;
         this.serviceRepository = serviceRepository;
@@ -42,6 +44,7 @@ public class BookingService {
         this.staffRepository = staffRepository;
         this.authorityRepository = authorityRepository;
         this.tenantSubscriptionRepository = tenantSubscriptionRepository;
+        this.slotLockService = slotLockService;
     }
 
     public List<LocalTime> getAvailableSlots(int serviceId, int staffId, LocalDate date) {
@@ -68,7 +71,17 @@ public class BookingService {
 
         LocalTime start = workingHours.getStartTime().withSecond(0).withNano(0);
         LocalTime end = workingHours.getEndTime().withSecond(0).withNano(0);
-        return calculateSlots(start, end, minDuration, bookings);
+
+        List<LocalTime> slots = calculateSlots(start, end, minDuration, bookings);
+
+        Integer tenantId = TenantContext.getCurrentTenantId();
+        if (tenantId != null) {
+            slots = slots.stream()
+                    .filter(slot -> !slotLockService.isLocked(tenantId, staffId, date, slot))
+                    .toList();
+        }
+
+        return slots;
     }
 
     private List<LocalTime> calculateSlots(
@@ -94,25 +107,18 @@ public class BookingService {
     }
 
     public BookingResponse createBooking(BookingRequest bookingRequest) {
-        Integer tenantId = TenantContext.getCurrentTenantId();             // context-dən götür
+        Integer tenantId = TenantContext.getCurrentTenantId();             // get From context
         Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(
                 () -> new RuntimeException("Tenant not found")
         );
 
-        List<LocalTime> availableSlots =
-                getAvailableSlots(
-                        bookingRequest.serviceId(),
-                        bookingRequest.staffId(),
-                        bookingRequest.date()
-                );
-
-
-        log.info("[Booking] Available slots: {}", availableSlots);
-        log.info("[Booking] Requested time: {}", bookingRequest.time());
-
-        if (!availableSlots.contains(bookingRequest.time())) {
-            throw new RuntimeException("Slot is no longer available");
-        }
+        slotLockService.validateAndReleaseLock(
+                tenantId,
+                bookingRequest.staffId(),
+                bookingRequest.date(),
+                bookingRequest.time(),
+                bookingRequest.lockToken()
+        );
 
         checkSubscriptionLimit(tenant);
 
@@ -157,21 +163,15 @@ public class BookingService {
     }
 
     private User createGuestUser(String name, String email, String phone) {
-        Authority ownerAuthority = authorityRepository.findByAuthority(UserAuthority.OWNER)
+        Authority ownerAuthority = authorityRepository.findByAuthority(UserAuthority.CLIENT)
                 .orElseGet(() -> {
                     Authority authority = new Authority();
                     authority.setAuthority(UserAuthority.OWNER);
                     return authorityRepository.save(authority);
                 });
 
-        User user = new User(
-                name,
-                email,
-                phone,
-                List.of(ownerAuthority)
-        );
+        User user = new User(name, email, phone, List.of(ownerAuthority));
         userRepository.save(user);
-
         return user;
     }
 
