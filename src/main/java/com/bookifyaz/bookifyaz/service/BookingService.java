@@ -2,6 +2,7 @@ package com.bookifyaz.bookifyaz.service;
 
 import com.bookifyaz.bookifyaz.dto.request.BookingRequest;
 import com.bookifyaz.bookifyaz.dto.response.BookingResponse;
+import com.bookifyaz.bookifyaz.email.NotificationService;
 import com.bookifyaz.bookifyaz.entity.*;
 import com.bookifyaz.bookifyaz.redis.SlotLockService;
 import com.bookifyaz.bookifyaz.repository.*;
@@ -33,8 +34,9 @@ public class BookingService {
     private final AuthorityRepository authorityRepository;
     private final TenantSubscriptionRepository tenantSubscriptionRepository;
     private final SlotLockService slotLockService;
+    private final NotificationService notificationService;
 
-    public BookingService(WorkingHoursRepository workingHoursRepository, TimeOffRepository timeOffRepository, ServiceRepository serviceRepository, BookingRepository bookingRepository, UserRepository userRepository, TenantRepository tenantRepository, StaffRepository staffRepository, AuthorityRepository authorityRepository, TenantSubscriptionRepository tenantSubscriptionRepository, SlotLockService slotLockService) {
+    public BookingService(WorkingHoursRepository workingHoursRepository, TimeOffRepository timeOffRepository, ServiceRepository serviceRepository, BookingRepository bookingRepository, UserRepository userRepository, TenantRepository tenantRepository, StaffRepository staffRepository, AuthorityRepository authorityRepository, TenantSubscriptionRepository tenantSubscriptionRepository, SlotLockService slotLockService, NotificationService notificationService) {
         this.workingHoursRepository = workingHoursRepository;
         this.timeOffRepository = timeOffRepository;
         this.serviceRepository = serviceRepository;
@@ -45,6 +47,7 @@ public class BookingService {
         this.authorityRepository = authorityRepository;
         this.tenantSubscriptionRepository = tenantSubscriptionRepository;
         this.slotLockService = slotLockService;
+        this.notificationService = notificationService;
     }
 
     public List<LocalTime> getAvailableSlots(int serviceId, int staffId, LocalDate date) {
@@ -146,9 +149,8 @@ public class BookingService {
 
         Booking savedBooking = bookingRepository.save(booking);
 
+        notificationService.sendBookingConfirmation(savedBooking, tenant.getName());
 
-        //todo notification logic will written
-//        notificationRepository.sendNotfication
         return new BookingResponse(
                 savedBooking.getId(),
                 savedBooking.getClient().getFullName(),

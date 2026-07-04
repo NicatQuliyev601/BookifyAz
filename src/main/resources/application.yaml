@@ -28,6 +28,18 @@ spring:
       host: localhost
       port: 6379
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: quliyeev.n.18@gmail.com
+    password: fjzlpekfwykzapdz
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
+
 server:
   port: 8086
 
