@@ -2,11 +2,13 @@ package com.bookifyaz.bookifyaz.service;
 
 import com.bookifyaz.bookifyaz.dto.request.BookingRequest;
 import com.bookifyaz.bookifyaz.dto.response.BookingResponse;
+import com.bookifyaz.bookifyaz.dto.response.StaffResponse;
 import com.bookifyaz.bookifyaz.email.NotificationService;
 import com.bookifyaz.bookifyaz.entity.*;
 import com.bookifyaz.bookifyaz.redis.SlotLockService;
 import com.bookifyaz.bookifyaz.repository.*;
 import com.bookifyaz.bookifyaz.tenant.TenantContext;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
@@ -35,8 +38,9 @@ public class BookingService {
     private final TenantSubscriptionRepository tenantSubscriptionRepository;
     private final SlotLockService slotLockService;
     private final NotificationService notificationService;
+    private final ModelMapper modelMapper;
 
-    public BookingService(WorkingHoursRepository workingHoursRepository, TimeOffRepository timeOffRepository, ServiceRepository serviceRepository, BookingRepository bookingRepository, UserRepository userRepository, TenantRepository tenantRepository, StaffRepository staffRepository, AuthorityRepository authorityRepository, TenantSubscriptionRepository tenantSubscriptionRepository, SlotLockService slotLockService, NotificationService notificationService) {
+    public BookingService(WorkingHoursRepository workingHoursRepository, TimeOffRepository timeOffRepository, ServiceRepository serviceRepository, BookingRepository bookingRepository, UserRepository userRepository, TenantRepository tenantRepository, StaffRepository staffRepository, AuthorityRepository authorityRepository, TenantSubscriptionRepository tenantSubscriptionRepository, SlotLockService slotLockService, NotificationService notificationService, ModelMapper modelMapper) {
         this.workingHoursRepository = workingHoursRepository;
         this.timeOffRepository = timeOffRepository;
         this.serviceRepository = serviceRepository;
@@ -48,6 +52,7 @@ public class BookingService {
         this.tenantSubscriptionRepository = tenantSubscriptionRepository;
         this.slotLockService = slotLockService;
         this.notificationService = notificationService;
+        this.modelMapper = modelMapper;
     }
 
     public List<LocalTime> getAvailableSlots(int serviceId, int staffId, LocalDate date) {
@@ -190,5 +195,43 @@ public class BookingService {
         if (currentMonth >= limit) {
             throw new RuntimeException("Monthly booking limit reached");
         }
+    }
+
+    public List<BookingResponse> filterBookings(LocalDate date, String status, int staffId) {
+        Staff staff = staffRepository.findById(staffId).orElseThrow(
+                () -> new RuntimeException("Staff Not Found")
+        );
+
+        return bookingRepository.findByDateAndStatusAndStaff(date, status, staff)
+                .stream()
+                .map(b -> new BookingResponse(
+                        b.getId(),
+                        b.getClient().getFullName(),
+                        b.getClient().getPhone(),
+                        b.getStaff().getUser().getFullName(),
+                        b.getService().getName(),
+                        b.getStartAt(),
+                        b.getEndAt(),
+                        b.getStatus(),
+                        b.getNotes()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public List<BookingResponse> findAllBookings() {
+        return bookingRepository
+                .findAll()
+                .stream()
+                .map(b -> new BookingResponse(
+                        b.getId(),
+                        b.getClient().getFullName(),
+                        b.getClient().getPhone(),
+                        b.getStaff().getUser().getFullName(),
+                        b.getService().getName(),
+                        b.getStartAt(),
+                        b.getEndAt(),
+                        b.getStatus(),
+                        b.getNotes()
+                )).collect(Collectors.toList());
     }
 }

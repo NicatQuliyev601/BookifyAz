@@ -4,6 +4,7 @@ public record StaffResponse(
         Integer id,
         String bio,
         String photoUrl,
-        boolean isActive
+        boolean isActive,
+        String fullName
 ) {
 }

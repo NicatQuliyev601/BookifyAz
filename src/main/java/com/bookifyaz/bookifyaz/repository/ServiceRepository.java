@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface ServiceRepository extends JpaRepository<Service, Integer> {
     List<Service> getServicesByTenant(Tenant tenant);
+
+    boolean existsByName(String name);
 }

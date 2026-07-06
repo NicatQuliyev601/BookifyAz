@@ -1,6 +1,7 @@
 package com.bookifyaz.bookifyaz.controller;
 
 import com.bookifyaz.bookifyaz.dto.request.BookingRequest;
+import com.bookifyaz.bookifyaz.dto.request.StaffRequest;
 import com.bookifyaz.bookifyaz.dto.response.BookingResponse;
 import com.bookifyaz.bookifyaz.dto.response.ServiceResponse;
 import com.bookifyaz.bookifyaz.dto.response.StaffResponse;
@@ -14,17 +15,18 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/public")
+@RequestMapping("/api/v1/staff")
 @CrossOrigin
 public class StaffController {
+
     private final StaffService staffService;
 
     public StaffController(StaffService staffService) {
         this.staffService = staffService;
     }
 
-    @GetMapping("/staff")
-    public ResponseEntity<List<StaffResponse>> getStaff() {
-        return ResponseEntity.status(HttpStatus.CREATED).body(staffService.findStaffByTenant());
+    @PostMapping
+    public ResponseEntity<String> createStaff(@RequestBody StaffRequest request) {
+        return new ResponseEntity<>(staffService.createStaff(request), HttpStatus.CREATED);
     }
 }
