@@ -14,4 +14,6 @@ public interface StaffServiceRepository extends JpaRepository<StaffService, Inte
     List<Staff> findStaffByServiceIdAndTenantId(@Param("serviceId") int serviceId, @Param("tenantId") int tenantId);
 
     void deleteAllByServiceId(int serviceId);
+
+    List<StaffService> findByStaffId(int staffId);
 }

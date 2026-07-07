@@ -5,6 +5,7 @@ import com.bookifyaz.bookifyaz.dto.request.StaffRequest;
 import com.bookifyaz.bookifyaz.dto.response.BookingResponse;
 import com.bookifyaz.bookifyaz.dto.response.ServiceResponse;
 import com.bookifyaz.bookifyaz.dto.response.StaffResponse;
+import com.bookifyaz.bookifyaz.entity.Staff;
 import com.bookifyaz.bookifyaz.repository.StaffRepository;
 import com.bookifyaz.bookifyaz.service.StaffService;
 import org.springframework.http.HttpStatus;
@@ -28,5 +29,17 @@ public class StaffController {
     @PostMapping
     public ResponseEntity<String> createStaff(@RequestBody StaffRequest request) {
         return new ResponseEntity<>(staffService.createStaff(request), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/assign/{serviceId}/{staffId}")
+    public ResponseEntity<String> assignServiceToStaff(@PathVariable int serviceId,
+                                                       @PathVariable int staffId) {
+        return new ResponseEntity<>(staffService.assignServiceToStaff(serviceId, staffId), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{serviceId}")
+    public ResponseEntity<StaffResponse> editStaff(@RequestBody StaffRequest request,
+                                                   @PathVariable int serviceId) {
+        return new ResponseEntity<>(staffService.editStaff(request, serviceId), HttpStatus.OK);
     }
 }

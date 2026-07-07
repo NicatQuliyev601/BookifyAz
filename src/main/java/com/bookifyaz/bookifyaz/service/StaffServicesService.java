@@ -23,13 +23,15 @@ public class StaffServicesService {
     private final TenantRepository tenantRepository;
     private final ServiceRepository serviceRepository;
     private final StaffServiceRepository staffServiceRepository;
+    private final StaffRepository staffRepository;
     private final ModelMapper modelMapper;
     private final BookingRepository bookingRepository;
 
-    public StaffServicesService(TenantRepository tenantRepository, ServiceRepository serviceRepository, StaffServiceRepository staffServiceRepository, ModelMapper modelMapper, BookingRepository bookingRepository) {
+    public StaffServicesService(TenantRepository tenantRepository, ServiceRepository serviceRepository, StaffServiceRepository staffServiceRepository, StaffRepository staffRepository, ModelMapper modelMapper, BookingRepository bookingRepository) {
         this.tenantRepository = tenantRepository;
         this.serviceRepository = serviceRepository;
         this.staffServiceRepository = staffServiceRepository;
+        this.staffRepository = staffRepository;
         this.modelMapper = modelMapper;
         this.bookingRepository = bookingRepository;
     }
@@ -57,7 +59,7 @@ public class StaffServicesService {
         Integer tenantId = TenantContext.getCurrentTenantId();
         return staffServiceRepository.findStaffByServiceIdAndTenantId(serviceId, tenantId)
                 .stream()
-                .map(staff -> new StaffResponse(staff.getId(), staff.getBio(), staff.getPhotoUrl(), staff.isActive(), staff.getUser().getFullName()))
+                .map(staff -> new StaffResponse(staff.getId(), staff.getBio(), staff.getPhotoUrl(), staff.isActive(), staff.getUser().getFullName(), staff.getUser().getEmail(), staff.getUser().getPhone()))
                 .collect(Collectors.toList());
     }
 

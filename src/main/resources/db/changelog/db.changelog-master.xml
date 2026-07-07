@@ -36,4 +36,8 @@
         <sqlFile path="db/changelog/V8__create_notifications_and_reviews.sql"/>
     </changeSet>
 
+    <changeSet id="9" author="bookifyaz">
+        <sqlFile path="db/changelog/V9__fix_staff_service_id_identity.sql"/>
+    </changeSet>
+
 </databaseChangeLog>

@@ -5,6 +5,8 @@ public record StaffResponse(
         String bio,
         String photoUrl,
         boolean isActive,
-        String fullName
+        String fullName,
+        String email,
+        String phone
 ) {
 }
