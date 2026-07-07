@@ -3,12 +3,10 @@ package com.bookifyaz.bookifyaz.service;
 import com.bookifyaz.bookifyaz.dto.request.ServiceRequest;
 import com.bookifyaz.bookifyaz.dto.response.ServiceResponse;
 import com.bookifyaz.bookifyaz.dto.response.StaffResponse;
+import com.bookifyaz.bookifyaz.entity.Booking;
 import com.bookifyaz.bookifyaz.entity.StaffService;
 import com.bookifyaz.bookifyaz.entity.Tenant;
-import com.bookifyaz.bookifyaz.repository.ServiceRepository;
-import com.bookifyaz.bookifyaz.repository.StaffRepository;
-import com.bookifyaz.bookifyaz.repository.StaffServiceRepository;
-import com.bookifyaz.bookifyaz.repository.TenantRepository;
+import com.bookifyaz.bookifyaz.repository.*;
 import com.bookifyaz.bookifyaz.tenant.TenantContext;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -26,12 +24,14 @@ public class StaffServicesService {
     private final ServiceRepository serviceRepository;
     private final StaffServiceRepository staffServiceRepository;
     private final ModelMapper modelMapper;
+    private final BookingRepository bookingRepository;
 
-    public StaffServicesService(TenantRepository tenantRepository, ServiceRepository serviceRepository, StaffServiceRepository staffServiceRepository, ModelMapper modelMapper) {
+    public StaffServicesService(TenantRepository tenantRepository, ServiceRepository serviceRepository, StaffServiceRepository staffServiceRepository, ModelMapper modelMapper, BookingRepository bookingRepository) {
         this.tenantRepository = tenantRepository;
         this.serviceRepository = serviceRepository;
         this.staffServiceRepository = staffServiceRepository;
         this.modelMapper = modelMapper;
+        this.bookingRepository = bookingRepository;
     }
 
     public List<ServiceResponse> findServicesByTenant() {
@@ -125,11 +125,16 @@ public class StaffServicesService {
     }
 
     @Transactional
-    //todo there is a problem here i will look. fk problem.
     public String deleteService(int serviceId) {
         com.bookifyaz.bookifyaz.entity.Service service = serviceRepository.findById(serviceId).orElseThrow(
                 () -> new RuntimeException("Service not found")
         );
+
+        List<Booking> bookings = bookingRepository.findByServiceId(serviceId);
+        for (Booking booking : bookings) {
+            booking.setService(null);
+        }
+
         staffServiceRepository.deleteAllByServiceId(serviceId);
         serviceRepository.delete(service);
 

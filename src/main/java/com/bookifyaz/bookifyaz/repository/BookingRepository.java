@@ -33,4 +33,6 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     @Query("SELECT b FROM Booking b WHERE CAST(b.startAt AS date) = :date AND b.status = :status AND b.staff = :staff")
     List<Booking> findByDateAndStatusAndStaff(@Param("date") LocalDate date, @Param("status") String status, @Param("staff") Staff staff);
+
+    List<Booking> findByServiceId(int serviceId);
 }
